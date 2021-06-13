@@ -20,7 +20,7 @@ class CdkPiplinesWebinarStack(cdk.Stack):
 
         handler = lmd.Function(self, 'Handler',
             runtime=lmd.Runtime.PYTHON_3_7, 
-            handler='handler', 
+            handler='handler.handler', 
             code=lmd.Code.from_asset(path.join(this_dir, 'lambda')))
         
         gw = apigw.LambdaRestApi(self, 'Gateway',
