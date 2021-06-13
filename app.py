@@ -6,7 +6,6 @@ from cdk_piplines_webinar.pipeline_stack import PipelineStack
 
 
 app = core.App()
-# CdkPiplinesWebinarStack(app, "CdkPiplinesWebinarStack")
 
 PipelineStack(app, 'PipelineStack', env={
   'account': '652846672077',
