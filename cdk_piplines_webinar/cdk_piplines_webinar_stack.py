@@ -2,6 +2,7 @@ from os import path
 from aws_cdk import core as cdk
 import aws_cdk.aws_lambda as lmd
 import aws_cdk.aws_apigateway as apigw
+import aws_cdk.aws_codedeploy as codedeploy
 
 # For consistency with other languages, `cdk` is the preferred import name for
 # the CDK's core module.  The following line also imports it as `core` for use
@@ -22,10 +23,20 @@ class CdkPiplinesWebinarStack(cdk.Stack):
             runtime=lmd.Runtime.PYTHON_3_7, 
             handler='handler.handler', 
             code=lmd.Code.from_asset(path.join(this_dir, 'lambda')))
+
+        alias = lmd.Alias(self, 'HandlerAlias',
+            alias_name='Current',
+            version=handler.current_version
+        )
         
         gw = apigw.LambdaRestApi(self, 'Gateway',
             description='Endpoint from a simple Lambda-powered web service',
-            handler=handler.current_version)
+            handler=alias)
+        
+        codedeploy.LambdaDeploymentGroup(self, 'DeploymentGroup',
+            alias=alias,
+            deployment_config=codedeploy.LambdaDeploymentConfig.CANARY_10_PERCENT_10_MINUTES,
+        )
         
         self.url_output = core.CfnOutput(self, 'Url',
             value=gw.url)
